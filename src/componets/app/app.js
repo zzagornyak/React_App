@@ -38,22 +38,26 @@ class App extends Component{
     }
 
     onToggleIncrease = (id) => {
-        this.setState(({data}) => {
-            const index = data.findIndex(elem => elem.id === id)
-            return {
-                data: data.map((elem, i) => {
-                    return i !== index ? elem : {
-                        name: elem.name, 
-                        salary: elem.salary, 
-                        increase: !elem.increase,
-                        promotion: false, 
-                        id: elem.id}
-                })
-            }
-        })
+        this.setState(({data}) => ({
+            data: data.map((elem) => {
+                if (elem.id === id) {
+                    return {...elem, increase: !elem.increase}
+                } else {
+                    return elem
+                }
+            })
+        }))
     }
     onTogglePromotion = (id) => {
-        console.log("ID - ", id )
+        this.setState(({data}) => ({
+            data: data.map((elem) => {
+                if (elem.id === id) {
+                    return {...elem, promotion: !elem.promotion}
+                } else {
+                    return elem
+                }
+            })
+        }))
     }
     
      addItem = (name, salary) => {
