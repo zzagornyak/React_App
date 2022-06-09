@@ -14,7 +14,6 @@ class EmployeesAddForm extends Component {
     }
 
     onValueChange = (e) => {
-        console.log(e.target.name, e.target.value)
         this.setState({
             
             [e.target.name]: e.target.value

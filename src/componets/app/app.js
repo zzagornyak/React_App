@@ -12,15 +12,6 @@ import "./app.css"
 class App extends Component{
     constructor (props) {
         super(props);
-        
-        
-        // this.data = [
-        //     {name: "John Connor", salary: "800", increase: false, id:1},
-        //     {name:"Lida Hamilton", salary: "1500", increase: false, id:2},
-        //     {name:"Eughene Zahorniak", salary: "2500", increase: false, id:3}
-        // ]
-
-        
         this.state = {
             data: [
                 {name: "John Connor", salary: "800", increase: false, promotion: false, id:1},
@@ -28,6 +19,7 @@ class App extends Component{
                 {name:"Eughene Zahorniak", salary: "2500", increase: false, promotion: false, id:3}
             ]
         }
+        this.maxId = 4;
     }
     
     onFilter = (filterMethod) => {
@@ -68,9 +60,11 @@ class App extends Component{
                     salary: salary, 
                     increase: false,
                     promotion: false, 
-                    id: this.state.data.length + 1}]
+                    id: this.maxId++}]
             }
         })
+
+
     }
     deleteItem = (id) => {
         this.setState(({data}) => {
@@ -85,7 +79,11 @@ class App extends Component{
         
         return ( 
             <div className="app">
-                <AppInfo/>
+                <AppInfo 
+                allEmployees={this.state.data.length}
+                increased={this.state.data.filter((elem) => {
+                    return elem.increase
+                }).length}/>
     
                 <div className="search-panel">
                     <SearchPanel/>
