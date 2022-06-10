@@ -33,7 +33,8 @@ class EmployeesAddForm extends Component {
                         value={name}
                         className="form-control new-post-label"
                         onChange={this.onValueChange}
-                        placeholder="Имя сотрудника" />
+                        placeholder="Имя сотрудника" 
+                        required="required"/>
                     <input 
                         type="number"
                         name="salary"

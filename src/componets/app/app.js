@@ -12,6 +12,13 @@ import "./app.css"
 class App extends Component{
     constructor (props) {
         super(props);
+        this.stateValue = {
+            data: [
+                {name: "John Connor", salary: "800", increase: false, promotion: false, id:1},
+                {name:"Lida Hamilton", salary: "1500", increase: false, promotion: false, id:2},
+                {name:"Eughene Zahorniak", salary: "2500", increase: false, promotion: false, id:3}
+            ]
+        }
         this.state = {
             data: [
                 {name: "John Connor", salary: "800", increase: false, promotion: false, id:1},
@@ -21,58 +28,69 @@ class App extends Component{
         }
         this.maxId = 4;
     }
+    refreshStateData = () => {
+        this.setState(() => {
+            return {
+                data : [...this.stateValue.data]
+            }
+        })    
+    }
     
-    onFilter = (filterMethod) => {
-        // "allEmployees"
-        // "salaryMoreThen1000"
-        // "forPromotion"
-        console.log(filterMethod)
+    onFilter = (e) => {
+        const filterMethod = e.currentTarget.getAttribute("data-filter");
+        if (filterMethod === "allEmployees") {
+            return this.refreshStateData()
+        }
+        if (filterMethod === "salaryMoreThen1000$") {
+            return this.setState(() => ({
+                data : this.stateValue.data.filter((elem) => +elem.salary > 1000)
+            }))
+        }
+        if (filterMethod === "onPromotion") {
+            return this.setState(() => ({
+                data : this.stateValue.data.filter((elem) => elem.promotion)
+            }))
+        }
     }
 
-    onToggleIncrease = (id) => {
-        this.setState(({data}) => ({
-            data: data.map((elem) => {
+    onToggleProp = (id, prop) => {
+        this.stateValue.data = 
+            this.stateValue.data.map((elem) => {
                 if (elem.id === id) {
-                    return {...elem, increase: !elem.increase}
+                    return {...elem, [prop]: !elem[prop]}
                 } else {
                     return elem
                 }
             })
-        }))
-    }
-    onTogglePromotion = (id) => {
-        this.setState(({data}) => ({
-            data: data.map((elem) => {
-                if (elem.id === id) {
-                    return {...elem, promotion: !elem.promotion}
-                } else {
-                    return elem
-                }
-            })
-        }))
+
+        this.refreshStateData()
     }
     
+    
      addItem = (name, salary) => {
-        this.setState(({data}) => {
-            return {
-                data : [...data, {
-                    name: name, 
-                    salary: salary, 
-                    increase: false,
-                    promotion: false, 
-                    id: this.maxId++}]
-            }
-        })
+        if (name && salary) {
+            this.stateValue.data.push({
+                name: name, 
+                salary: salary, 
+                increase: false,
+                promotion: false, 
+                id: this.maxId++})
+            this.refreshStateData()
+        } else {
+            alert("Для добавления нового сотрудника введите его имя и зарплату")
+        }
+        
 
 
     }
     deleteItem = (id) => {
-        this.setState(({data}) => {
-            return {
-                data : data.filter(item => item.id !== id)
-            }
+        this.stateValue.data = this.stateValue.data.filter((item) => {
+            return item.id !== id
         })
+
+        this.refreshStateData()
     }
+
 
     render() {
         
@@ -93,8 +111,7 @@ class App extends Component{
                 <EmployeesList 
                     data={this.state.data}
                     onDelete={this.deleteItem}
-                    onToggleIncrease={this.onToggleIncrease}
-                    onTogglePromotion={this.onTogglePromotion}/>
+                    onToggleProp={this.onToggleProp}/>
                 <EmployeesAddForm 
                     onAdd={this.addItem}/>
                 

@@ -17,20 +17,25 @@ class AppFilter extends Component {
         const {onFilter} = this.props
         return (
             <div className="btn-group">
-                <button 
+                <button
+                    data-filter="allEmployees"
                     className={this.state.allEmployees}
                     type="button"
-                    onClick={() => onFilter("gg")}>
+                    onClick={(e) => onFilter(e)}>
                         Все сотрудники
                 </button>
-                <button 
+                <button
+                    data-filter="onPromotion" 
                     className={this.state.forPromotion}
-                    type="button">
+                    type="button"
+                    onClick={(e) => onFilter(e)}>
                         На повышение
                 </button>
                 <button 
+                    data-filter="salaryMoreThen1000$"
                     className={this.state.salaryMoreThen1000}
-                    type="button">
+                    type="button"
+                    onClick={(e) => onFilter(e)}>
                         З/П больше 1000$
                 </button>
             </div>
