@@ -12,88 +12,88 @@ import "./app.css"
 class App extends Component{
     constructor (props) {
         super(props);
-        this.stateValue = {
-            data: [
-                {name: "John Connor", salary: "800", increase: false, promotion: false, id:1},
-                {name:"Lida Hamilton", salary: "1500", increase: false, promotion: false, id:2},
-                {name:"Eughene Zahorniak", salary: "2500", increase: false, promotion: false, id:3}
-            ]
-        }
+        
         this.state = {
             data: [
                 {name: "John Connor", salary: "800", increase: false, promotion: false, id:1},
                 {name:"Lida Hamilton", salary: "1500", increase: false, promotion: false, id:2},
                 {name:"Eughene Zahorniak", salary: "2500", increase: false, promotion: false, id:3}
-            ]
+            ],
+            term: "",
+            filter: "all"
         }
+        
         this.maxId = 4;
     }
-    refreshStateData = () => {
-        this.setState(() => {
-            return {
-                data : [...this.stateValue.data]
-            }
-        })    
-    }
-    
-    onFilter = (e) => {
-        const filterMethod = e.currentTarget.getAttribute("data-filter");
-        if (filterMethod === "allEmployees") {
-            return this.refreshStateData()
-        }
-        if (filterMethod === "salaryMoreThen1000$") {
-            return this.setState(() => ({
-                data : this.stateValue.data.filter((elem) => +elem.salary > 1000)
-            }))
-        }
-        if (filterMethod === "onPromotion") {
-            return this.setState(() => ({
-                data : this.stateValue.data.filter((elem) => elem.promotion)
-            }))
-        }
-    }
 
+    onFilter = (items, filter) => {
+
+        switch (filter) {
+            case "toPromotion":
+                return items.filter( item => item.promotion )
+            case "salaryMoreThen1000$":
+                return items.filter(item => item.salary > 1000)
+            default:
+                return items
+        }
+    }
     onToggleProp = (id, prop) => {
-        this.stateValue.data = 
-            this.stateValue.data.map((elem) => {
-                if (elem.id === id) {
-                    return {...elem, [prop]: !elem[prop]}
-                } else {
-                    return elem
+        this.setState(({data}) => ({
+            data: data.map(item => {
+                if (item.id === id) {
+                    return {...item, [prop]: !item[prop]}
                 }
+                return item
             })
-
-        this.refreshStateData()
+        }))
     }
     
     
      addItem = (name, salary) => {
         if (name && salary) {
-            this.stateValue.data.push({
-                name: name, 
-                salary: salary, 
-                increase: false,
-                promotion: false, 
-                id: this.maxId++})
-            this.refreshStateData()
+            this.setState(({data}) => {
+                return {
+                    data: [...data, {
+                        name: name, 
+                        salary: salary, 
+                        increase: false,
+                        promotion: false, 
+                        id: this.maxId++}]
+                }
+            })
         } else {
             alert("Для добавления нового сотрудника введите его имя и зарплату")
         }
-        
-
-
     }
+
     deleteItem = (id) => {
-        this.stateValue.data = this.stateValue.data.filter((item) => {
-            return item.id !== id
+        this.setState(({data}) => {
+            return {
+                data: data.filter(elem => elem.id !== id )
+            }
         })
-
-        this.refreshStateData()
     }
 
+    searchEmp = (items, term) => {
+        if (term.length === 0) {
+            return items;
+        }
+        return items.filter((item) => {
+            return item.name.toLowerCase().includes(term.toLowerCase())
+        })
+    }
+
+    onUpdateSearch = (term) => {
+        this.setState({term})
+    }
+    onUpdateFilter = (filter) => {
+        this.setState({filter})
+    }
 
     render() {
-        
+
+        const {data, term, filter} = this.state
+        const visibleData = this.onFilter(this.searchEmp(data, term), filter)
         
         return ( 
             <div className="app">
@@ -104,14 +104,20 @@ class App extends Component{
                 }).length}/>
     
                 <div className="search-panel">
-                    <SearchPanel/>
-                    <AppFilter
-                        onFilter={this.onFilter}/>
+
+                    <SearchPanel 
+                    onUpdateSearch={this.onUpdateSearch}/>
+
+                    <AppFilter 
+                        filter={filter}
+                        onUpdateFilter={this.onUpdateFilter}/>
                 </div>
+
                 <EmployeesList 
-                    data={this.state.data}
+                    data={visibleData}
                     onDelete={this.deleteItem}
                     onToggleProp={this.onToggleProp}/>
+
                 <EmployeesAddForm 
                     onAdd={this.addItem}/>
                 
